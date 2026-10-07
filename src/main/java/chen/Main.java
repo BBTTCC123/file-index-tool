@@ -20,7 +20,7 @@ public class Main {
                 System.out.println("||7.重命名计划(dry-run)           ||");
                 System.out.println("||8.执行重命名                    ||");
                 System.out.println("||0.退出                          ||");
-                System.out.println("||ps:路径长度不应当超过100字符    ||");
+                System.out.println("||ps:路径长度不应超过100字符     ||");
                 System.out.println("====================================");
 
                 int n = sc.nextInt();
