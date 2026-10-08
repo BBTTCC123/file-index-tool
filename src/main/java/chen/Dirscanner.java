@@ -31,16 +31,8 @@ public class Dirscanner {
                 if(f.isDirectory()){
                     count+= reScan(f.getAbsolutePath());
                 }else{
-                    String wholeName = f.getName();
-                    String fileName;
-                    String extName;
-                    if(!(wholeName.contains("."))||wholeName.indexOf(".")==0){
-                        fileName = wholeName;
-                        extName = "file";
-                    }else{
-                        fileName = wholeName.substring(0, wholeName.lastIndexOf("."));
-                        extName = wholeName.substring(wholeName.lastIndexOf(".")+1);
-                    }
+                    String[] arr =  extract(f.getName());
+
                     LocalDateTime dateTime = LocalDateTime.ofInstant(
                             Instant.ofEpochMilli(f.lastModified()),
                             ZoneId.systemDefault()
@@ -48,7 +40,7 @@ public class Dirscanner {
                     String mysqlDateTime = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
                     jdbcm.delete(f.getAbsolutePath());
-                    jdbcm.insert(f.getAbsolutePath(), fileName, extName, f.length(), mysqlDateTime);
+                    jdbcm.insert(f.getAbsolutePath(), arr[0], arr[1], f.length(), mysqlDateTime);
                     count++;
                 }
             }
@@ -88,30 +80,37 @@ public class Dirscanner {
                 if(f.isDirectory()){
                     continue;
                 }
-                String wholeName = f.getName();
-                String fileName;
-                String extName;
-                if(!(wholeName.contains("."))||wholeName.indexOf(".")==0){
-                    fileName = wholeName;
-                    extName = "file";
-                }else{
-                    fileName = wholeName.substring(0, wholeName.lastIndexOf("."));
-                    extName = wholeName.substring(wholeName.lastIndexOf(".")+1);
-                }
+                String[] arr =  extract(f.getName());
+
                 LocalDateTime dateTime = LocalDateTime.ofInstant(
                         Instant.ofEpochMilli(f.lastModified()),
-                        ZoneId.systemDefault()
+                       ZoneId.systemDefault()
                 );
                 String mysqlDateTime = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
                 jdbcm.delete(f.getAbsolutePath());
-                jdbcm.insert(f.getAbsolutePath(), fileName, extName, f.length(), mysqlDateTime);
+                jdbcm.insert(f.getAbsolutePath(), arr[0], arr[1], f.length(), mysqlDateTime);
                 count++;
             }
             System.out.println("共录入"+count+"条信息");
         }else {
             System.out.println("文件或文件夹不存在");
         }
+    }
+    static String[] extract(String wholeName){
+        String fileName;
+        String extName;
+        if(!(wholeName.contains("."))||wholeName.indexOf(".")==0){
+            fileName = wholeName;
+            extName = "file";
+        }else{
+            fileName = wholeName.substring(0, wholeName.lastIndexOf("."));
+            extName = wholeName.substring(wholeName.lastIndexOf(".")+1);
+        }
+        String[] arr = new String[2];
+        arr[0]= fileName;
+        arr[1]= extName;
+        return arr;
     }
     public void delete(String addre) throws  Exception{
         jdbcm.delete(addre);
